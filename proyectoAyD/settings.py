@@ -37,9 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
+    'grafos'
 ]
+CORS_ORIGIN_ALLOW_ALL = True
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,7 +59,7 @@ ROOT_URLCONF = 'proyectoAyD.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['C:/Users/migue/Documents/Proyecto_AyD/proyectoAyD/proyectoAyD/vistas/'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,11 +77,20 @@ WSGI_APPLICATION = 'proyectoAyD.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
+#usuario : usuarioAyD
+# clave : 1234
+#segundo usuario
+#usuario : usuarioAyDPrincipal
+# clave : 1234
+#ip addres: 1.2.3.4/0
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'CLIENT':{
+            "host":"mongodb+srv://usuarioAyD:1234@cluster0.q7m8u.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+            "name":"usuarioAyD",
+            "authMechanism":"SCRAM-SHA-1"
+        }
     }
 }
 
