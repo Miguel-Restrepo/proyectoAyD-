@@ -4,6 +4,17 @@ from django.db import models
 class Grafo(models.Model):
     GrafoId = models.AutoField(primary_key=True)
     NombreGrafo= models.CharField(max_length=500)
+    nodes=models.JSONField()
+    links=models.JSONField()
+    Dirigido=models.IntegerField()
+    Ponderado=models.IntegerField()
+    Conexo=models.IntegerField()
+    Multigrafo=models.IntegerField()
+    Ciclico=models.IntegerField()
+    Aciclico=models.IntegerField()
+    Bipartito=models.IntegerField()
+    Completo=models.IntegerField()
+    
 class Algoritmo(models.Model):
     AlgoritmoId = models.AutoField(primary_key=True)
     NombreAlgoritmo= models.CharField(max_length=500)
