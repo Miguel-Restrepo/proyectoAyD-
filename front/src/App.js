@@ -1,9 +1,10 @@
-import logo from './logo.svg';
 import './App.css';
 import {ForceGraph3D} from 'react-force-graph';
 import SpriteText from 'three-spritetext';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
-import {useRef, useCallback, useEffect} from 'react'
+import React from 'react';
+import {useRef, useCallback, useEffect, useState} from 'react'
+import axios from "axios";
 import Navbar from 'react-bootstrap/Navbar'
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton'
@@ -11,7 +12,25 @@ import Container from 'react-bootstrap/Container'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+
 function App() {
+
+
+  const [dataGrafoAleatorio, setDataGrafoAleatorio] = useState({ nodes: [{ id: 0 }], links: [] });
+
+
+  const GetGrafoAleatorio = () => {
+    axios.get('/grafo/generaraleatorio')
+      .then(response => {
+        console.log(response.data);
+        setDataGrafoAleatorio(response.data);
+        return response.data;
+      })
+      .catch(error => {
+        return error;
+      })
+  }
+
 
   let myData = {
       "nodes": [ 
@@ -43,7 +62,17 @@ function App() {
             "curvature": 1, 
             "rotation": 0,
             "weight": 100 
-        } 
+        },
+        {
+          "source": 3,
+          "target": 1,
+          "weight": 100 
+      },
+      {
+        "source": 1,
+        "target": 3,
+        "weight": 100 
+    }   
       ]
   }
   
@@ -122,7 +151,7 @@ function App() {
 
     return <ForceGraph3D
       ref={fgRef}
-      graphData={myData}
+      graphData={dataGrafoAleatorio}
       nodeLabel="id"
       onNodeClick={handleClick}
       linkCurvature="curvature"
@@ -171,7 +200,12 @@ function App() {
             menuVariant="dark"
           >
             <Dropdown.Item eventKey="1" className='glow-on-hover text-white'><span>Personalizado</span></Dropdown.Item>
-            <Dropdown.Item eventKey="2" className='glow-on-hover text-white'><span>Aleatorio</span></Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover text-white' 
+              onClick={
+                () => GetGrafoAleatorio() 
+              }>
+              <span>Aleatorio</span>
+            </Dropdown.Item>
           </DropdownButton>
 
           <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Abrir</span></Dropdown.Item>
