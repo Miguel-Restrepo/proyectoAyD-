@@ -2,8 +2,14 @@ import logo from './logo.svg';
 import './App.css';
 import {ForceGraph3D} from 'react-force-graph';
 import SpriteText from 'three-spritetext';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import {useRef, useCallback, useEffect} from 'react'
-
+import Navbar from 'react-bootstrap/Navbar'
+import Dropdown from 'react-bootstrap/Dropdown'
+import DropdownButton from 'react-bootstrap/DropdownButton'
+import Container from 'react-bootstrap/Container'
+import ButtonGroup from 'react-bootstrap/ButtonGroup'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
 
@@ -106,6 +112,12 @@ function App() {
       //distancia de acuerdo a atributo
       //fg.d3Force('link').distance(link => {return link.weight});
 
+      const bloomPass = new UnrealBloomPass();
+      bloomPass.strength = 2;
+      bloomPass.radius = 0.4;
+      bloomPass.threshold = 0.1;
+      fgRef.current.postProcessingComposer().addPass(bloomPass);
+
     }, []);
 
     return <ForceGraph3D
@@ -138,22 +150,203 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+    <Navbar variant="dark" bg="dark" expand="lg">
+      <Container>
+
+      <Dropdown className="d-inline mx-2" autoClose="inside" >
+
+        <Dropdown.Toggle id="dropdown-autoclose-inside" className='glow-on-hover' >
+        <span>Archivo</span>
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu className='bgGray'>
+
+          <DropdownButton
+            as={ButtonGroup}
+            drop={'end'}
+            title={'Nuevo grafo'}
+            className='w-100 glow-on-hover2'
+            autoClose="inside"
+            menuVariant="dark"
+          >
+            <Dropdown.Item eventKey="1" className='glow-on-hover text-white'><span>Personalizado</span></Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover text-white'><span>Aleatorio</span></Dropdown.Item>
+          </DropdownButton>
+
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Abrir</span></Dropdown.Item>
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Cerrar</span></Dropdown.Item>
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Guardar</span></Dropdown.Item>
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Guardar como</span></Dropdown.Item>
+
+          <DropdownButton
+            as={ButtonGroup}
+            drop={'end'}
+            variant="secondary"
+            title={'Exportar datos'}
+            className='w-100 glow-on-hover2 text-white bgGray'
+            autoClose="inside"
+            menuVariant="dark"
+          >
+            <Dropdown.Item eventKey="1" className='glow-on-hover'><span>Excel</span></Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover'><span>Imagen</span></Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover'><span>PDF</span></Dropdown.Item>
+          </DropdownButton>
+
+
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Importar datos</span></Dropdown.Item>
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Inicio</span></Dropdown.Item>
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Imprimir</span></Dropdown.Item>
+
+        </Dropdown.Menu>
+        
+      </Dropdown>
+
+
+      <Dropdown className="d-inline mx-2" autoClose="inside"> 
+
+        <Dropdown.Toggle id="dropdown-autoclose-inside" className='glow-on-hover' >
+        <span>Editar</span>
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu className='bgGray'>
+
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Deshacer</span></Dropdown.Item>
+
+          <DropdownButton
+            as={ButtonGroup}
+            drop={'end'}
+            title={'Nodo'}
+            className='w-100 glow-on-hover2 text-white bgGray'
+            autoClose="inside"
+            menuVariant="dark"
+          >
+            <Dropdown.Item eventKey="1" className='glow-on-hover text-white'><span>Agregar</span></Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover text-white'><span>Editar</span></Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover text-white'><span>Eliminar</span></Dropdown.Item>
+          </DropdownButton>
+
+          <DropdownButton
+            as={ButtonGroup}
+            drop={'end'}
+            variant="secondary"
+            title={'Arco'}
+            className='w-100 glow-on-hover2 text-white bgGray'
+            autoClose="inside"
+            menuVariant="dark"
+          >
+            <Dropdown.Item eventKey="1" className='glow-on-hover text-white'><span>Agregar</span></Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover text-white'><span>Editar</span></Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover text-white'><span>Eliminar</span></Dropdown.Item>
+          </DropdownButton>
+
+        </Dropdown.Menu>
+        
+      </Dropdown>
+
+
+
+      <Dropdown className="d-inline mx-2" autoClose="inside">
+
+        <Dropdown.Toggle id="dropdown-autoclose-inside" className='glow-on-hover' >
+        <span>Analizar</span>
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu className='bgGray'>
+
+          <DropdownButton
+            as={ButtonGroup}
+            drop={'end'}
+            variant="secondary"
+            title={'Algoritmos'}
+            className='w-100 glow-on-hover2 text-white bgGray'
+            autoClose="inside"
+            menuVariant="dark"
+          >
+            <Dropdown.Item eventKey="1" className='glow-on-hover text-white'><span>Algoritmo 1</span></Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover text-white'><span>Algoritmo 2</span></Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover text-white'><span>Algoritmo 3</span></Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover text-white'><span>Algoritmo 4</span></Dropdown.Item>
+
+          </DropdownButton>
+
+        </Dropdown.Menu>
+        
+      </Dropdown>
+
+
+
+      <Dropdown className="d-inline mx-2" autoClose="inside">
+
+        <Dropdown.Toggle id="dropdown-autoclose-inside" className='glow-on-hover' >
+        <span>Herramienta</span>
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu className='bgGray'>
+
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Ejecución</span></Dropdown.Item>
+
+        </Dropdown.Menu>
+        
+      </Dropdown>
+
+
+
+      <Dropdown className="d-inline mx-2" autoClose="inside">
+
+        <Dropdown.Toggle id="dropdown-autoclose-inside" className='glow-on-hover' >
+        <span>Aplicación</span>
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu className='bgGray'>
+
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Aplicación 1</span></Dropdown.Item>
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Aplicación 2</span></Dropdown.Item>
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Aplicación 3</span></Dropdown.Item>
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Aplicación m</span></Dropdown.Item>
+
+        </Dropdown.Menu>
+        
+      </Dropdown>
+
+
+      <Dropdown className="d-inline mx-2" autoClose="inside">
+
+        <Dropdown.Toggle id="dropdown-autoclose-inside" className='glow-on-hover' >
+        <span>Ventana</span>
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu className='bgGray'>
+
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Gráfica</span></Dropdown.Item>
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Tabla</span></Dropdown.Item>
+
+        </Dropdown.Menu>
+        
+      </Dropdown>
+
+
+      <Dropdown className="d-inline mx-2" autoClose="inside">
+
+        <Dropdown.Toggle id="dropdown-autoclose-inside" className='glow-on-hover' >
+        <span>Ayuda</span>
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu className='bgGray'>
+
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Ayuda</span></Dropdown.Item>
+          <Dropdown.Item href="#" className='glow-on-hover text-white'><span>Acerca de Grafos</span></Dropdown.Item>
+
+        </Dropdown.Menu>
+        
+      </Dropdown>
+
+
+
+      </Container>
+    </Navbar>
       
-        <FocusGraph />
+    <FocusGraph />
 
     </div>
   );
