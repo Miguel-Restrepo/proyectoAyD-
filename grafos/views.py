@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
+#from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 from django.utils.crypto import get_random_string
@@ -8,7 +8,7 @@ import random
 from grafos.serializers import GrafoSerializers,AlgoritmoSerializers
 # Create your views here.
 
-@csrf_exempt
+#@csrf_exempt
 def grafoApi(request,id=0):
     if request.method=='GET' and id!=0:
         grafo= Grafo.objects.filter(GrafoId=id)
@@ -52,24 +52,33 @@ def grafoAleatorio(request,id=0):
         completo= random.randint(0,1)
         if completo==1:
             bipartito=0
-       
+        numeroNodos = random.randint(2,10) 
+        numeroAristas = random.randint(numeroNodos-1,numeroNodos*2+numeroNodos)
         nombre = get_random_string(length=5, allowed_chars='AEIOUJM')
-        grafo=generarGrafo(nombre,dirigido,ponderado,conexo,multigrafo,ciclico,aciclico,bipartito,completo)
+        grafo=generarGrafo(nombre,numeroNodos, numeroAristas, dirigido,ponderado,conexo,multigrafo,ciclico,aciclico,bipartito,completo)
         #grafo_serializers=GrafoSerializers(data=grafo)
         #if grafo_serializers.is_valid():
          #   grafo_serializers.save()
         return JsonResponse(grafo, safe=False)
 
 def grafoValidar(request):
-    if request.method=='GET':
-        #grafo_data=JSONParser().parse(request)
-        #grafo_serializers=GrafoSerializers(data=grafo_data)
-        #return JsonResponse(grafo_serializers, safe=False)
-        grafo= Grafo.objects.all()
-        grafo_serializers=GrafoSerializers(grafo,many=True)
-        return JsonResponse(grafo_serializers.data, safe=False)
+    if request.method=='POST':
+        grafo_data=JSONParser().parse(request)
+        grafo_serializers=GrafoSerializers(data=grafo_data)
+        if grafo_serializers.is_valid():
+           # grafo_serializers.save()
+            return JsonResponse("Se Valido con exito", safe=False)
+        return JsonResponse("NO cumple con los parametros establecidos", safe=False)
 
-def generarGrafo(nombre,dirigido,ponderado,conexo,multigrafo,ciclico,aciclico,bipartito,completo):
+def generarGrafo(nombre,numeroNodos, numeroAristas, dirigido,ponderado,conexo,multigrafo,ciclico,aciclico,bipartito,completo):
+    if ponderado==1:
+        if conexo==1:
+            if numeroNodos-1>numeroAristas:
+                numeroAristas=numeroNodos-1#ASEGURA QUE SEA CONEXO
+            
+        numeroNodos = random.randint(2,10) 
+
+
     numeroNodos = random.randint(2,10) 
     nodos=[]
     for i in range(1,numeroNodos):
@@ -88,8 +97,8 @@ def generarGrafo(nombre,dirigido,ponderado,conexo,multigrafo,ciclico,aciclico,bi
         numeroAristas = random.randint(numeroNodos-1,numeroNodos*2+numeroNodos)
     for i in range(1,numeroAristas):
         pesoArista = random.randint(5,20)
-        nodoOrigen= random.randint(1,numeroNodos)
-        nodoDestino= random.randint(1,numeroNodos)
+        nodoOrigen= random.randint(1,numeroNodos-1)
+        nodoDestino= random.randint(1,numeroNodos-1)
         if nodoOrigen==nodoDestino:
             aristas.append( {
                     "source": nodoOrigen,
@@ -118,6 +127,27 @@ def generarGrafo(nombre,dirigido,ponderado,conexo,multigrafo,ciclico,aciclico,bi
             "Completo":completo
         }
     return grafo
+def generarAristasConexas(numeroAristas):
+    aristas=[]
+    for i in range(1,numeroAristas):
+        pesoArista = random.randint(5,20)
+        nodoOrigen= random.randint(1,numeroAristas+1)
+        nodoDestino= random.randint(1,numeroAristas+1)
+        if nodoOrigen==nodoDestino:
+            aristas.append( {
+                    "source": nodoOrigen,
+                    "target": nodoDestino,
+                    "curvature": 1, 
+                    "rotation": 0,
+                    "weight": pesoArista 
+                } )
+        else:
+            aristas.append( {
+                        "source": nodoOrigen,
+                        "target": nodoDestino,
+                        "weight": pesoArista
+                    })
+
 def generarNodosyAristas(conexo):
 
     if conexo==1 and not(verificarConexo()):
