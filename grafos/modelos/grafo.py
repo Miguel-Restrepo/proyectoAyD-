@@ -1,6 +1,6 @@
 from collections import * #esta cosa es de profesor
-from Modelo.Vertice import *#importar clase vertice
-from Modelo.Arista import *#Importar clase arista
+from vertice import *#importar clase vertice
+from arista import *#Importar clase arista
 import numpy as np#Libreria Numpy ayuda en el manejo de arreglos
 class Grafo():
     def __init__(self):
@@ -147,33 +147,6 @@ class Grafo():
         peso=arista.getpeso()
         self.ListaAristas.remove(arista)
         self.ListaAristas.append(Arista(origen,destino,peso))
-
-
-
-    def SolicitarPedido(self, hachas, palas, agua, picas,martillos, destino,centro):
-        destino=self.obtenerVertice(destino)
-        camion=None
-        for camionbuscador in centro.Camiones:
-            if len(camionbuscador.ListaPedidos)<5:
-                camion=camionbuscador
-                break
-            else:
-                print("buscando Siguiente Camion")
-        if camion==None:
-            print("No hay actualmente Camiones Disponibles")
-            return
-        if hachas>centro.getHachasAlmacenadas() or palas>centro.getPalasAlmacenadas() or agua>centro.getAguaAlmacenada() or picas>centro.getPicasAlmacenadas() or martillos>centro.getMartillosAlmacenados():
-            print("No es posible Realizar el pedido")
-            return
-        else:
-            centro.DisminuirHachas(hachas)
-            centro.DisminuirPalas(palas)
-            centro.DisminuirAgua(agua)
-            centro.DisminuirPicas(picas)
-            centro.DisminuirMartillos(martillos)
-            PedidoNuevo=Pedido(destino,hachas,palas,agua,picas,martillos, camion)
-            camion.ListaPedidos.append(PedidoNuevo)
-            print("Solicitado")
     def DesbloquearArista(self,origen,destino):
         arista = self.ObtenerArista(origen, destino)
         aristavuelta = self.ObtenerArista(destino, origen)
