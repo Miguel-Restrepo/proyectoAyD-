@@ -112,7 +112,7 @@ function App() {
     const fgRef = useRef();
     const [dataGrafoAleatorio, setDataGrafoAleatorio] = useState({ nodes: [], links: [] });
     const [canRemove, setCanRemove] = useState(false);
-    
+    const [cooldownTicks, setCooldownTicks] = useState(undefined);
 
     const handleClick = useCallback(node => {
 
@@ -147,9 +147,9 @@ function App() {
       //fg.d3Force('link').distance(link => {return link.weight});
 
       const bloomPass = new UnrealBloomPass();
-      bloomPass.strength = 2;
-      bloomPass.radius = 0.4;
-      bloomPass.threshold = 0.1;
+      bloomPass.strength = 1.65;
+      bloomPass.radius = 0.18;
+      bloomPass.threshold = 0.15;
       fgRef.current.postProcessingComposer().addPass(bloomPass);
 
     }, []);
@@ -216,7 +216,13 @@ function App() {
 
     cleanValue () {
       setCanRemove(true);
-    }
+    },
+
+
+    canDrag () {
+      setCooldownTicks(0);
+    },
+
 
   }));
 
@@ -234,9 +240,13 @@ function App() {
       linkThreeObject={link => {
         // extend link with text sprite
 
-          const sprite = new SpriteText(`${link.weight}`);
+          let sprite = new SpriteText(`${link.weight}`);
+          if(!link.hasOwnProperty('weight')){
+            sprite = new SpriteText('');
+          }
           sprite.color = 'lightgrey';
           sprite.textHeight = 1.5;
+
           return sprite;
 
         
@@ -251,6 +261,16 @@ function App() {
           Object.assign(sprite.position, middlePos);
         
       }}
+      cooldownTicks={cooldownTicks}
+      onNodeDragEnd={() => setCooldownTicks(undefined)}
+      linkDirectionalArrowLength={()=>{
+        if(dataGrafoAleatorio.Dirigido === 1)
+        return 3.5
+        else{
+          return 0
+        }
+      }}
+      linkDirectionalArrowRelPos={1}
 
     />;
   });
@@ -348,6 +368,14 @@ function App() {
             }>
               <span>
                 Eliminar
+              </span>
+            </Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover text-white'
+            onClick={
+              () => childRef.current.canDrag()
+            }>
+              <span>
+                Mover
               </span>
             </Dropdown.Item>
           </DropdownButton>

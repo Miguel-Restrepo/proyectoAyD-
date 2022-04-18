@@ -199,10 +199,11 @@ button{
   border: none!important;
   color: #fff!important;
   text-align: left!important;
+  border-radius: 20px!important;
 }
 
 button:hover {
-  background-color: #161b20!important;
+  background-color: #212529!important;
   border-radius: 20px!important;
 }
 
