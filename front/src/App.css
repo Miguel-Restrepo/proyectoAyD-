@@ -143,6 +143,13 @@ span{
   border-radius: 0px!important;
 }
 
+.glow-on-hover2:hover {
+
+  position: relative;
+  z-index:2;
+
+}
+
 .glow-on-hover2:before {
   content: '';
   background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
@@ -191,12 +198,12 @@ button{
   background-color: #212529!important;
   border: none!important;
   color: #fff!important;
-  border-radius: 20px!important;
   text-align: left!important;
 }
 
 button:hover {
   background-color: #161b20!important;
+  border-radius: 20px!important;
 }
 
 .dropdown-menu {

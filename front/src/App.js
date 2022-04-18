@@ -3,7 +3,7 @@ import {ForceGraph3D} from 'react-force-graph';
 import SpriteText from 'three-spritetext';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import React from 'react';
-import {useRef, useCallback, useEffect, useState} from 'react'
+import {useRef, useCallback, useEffect, useState, forwardRef, useImperativeHandle} from 'react'
 import axios from "axios";
 import Navbar from 'react-bootstrap/Navbar'
 import Dropdown from 'react-bootstrap/Dropdown'
@@ -16,22 +16,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {
 
 
-  const [dataGrafoAleatorio, setDataGrafoAleatorio] = useState({ nodes: [{ id: 0 }], links: [] });
-
-
-  const GetGrafoAleatorio = () => {
-    axios.get('/grafo/generaraleatorio')
-      .then(response => {
-        console.log(response.data);
-        setDataGrafoAleatorio(response.data);
-        return response.data;
-      })
-      .catch(error => {
-        return error;
-      })
-  }
-
-
+  const childRef = useRef();
+  
+  
   let myData = {
       "nodes": [ 
           { 
@@ -118,20 +105,38 @@ function App() {
   };
 
 
-  const FocusGraph = () => {
+
+
+  const FocusGraph = forwardRef((props, ref) => {
+
     const fgRef = useRef();
+    const [dataGrafoAleatorio, setDataGrafoAleatorio] = useState({ nodes: [], links: [] });
+    const [canRemove, setCanRemove] = useState(false);
+    
 
     const handleClick = useCallback(node => {
-      // Aim at node from outside it
-      const distance = 40;
-      const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
 
-      fgRef.current.cameraPosition(
-        { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, // new position
-        node, // lookAt ({ x, y, z })
-        3000  // ms transition duration
-      );
-    }, [fgRef]);
+       //+ 
+      if (canRemove) {
+        const { nodes, links } = dataGrafoAleatorio;
+
+        // Remove node on click
+        const newLinks = links.filter(l => l.source !== node && l.target !== node); // Remove links attached to node
+        console.log(node);
+        console.log(links);
+        console.log(newLinks);
+        const newNodes = nodes.filter(l => l !== node); 
+        console.log(newNodes);
+
+        setDataGrafoAleatorio({ nodes: newNodes, links: newLinks });
+        setCanRemove(false);
+
+      }
+
+    }, [canRemove,dataGrafoAleatorio, setDataGrafoAleatorio]);
+
+
+    
 
 
     useEffect(() => {
@@ -149,6 +154,74 @@ function App() {
 
     }, []);
 
+
+    
+
+
+    
+
+
+    /** 
+   
+
+    useEffect(() => {
+      setInterval(() => {
+        GetGrafoAleatorio();
+      }, 1000);
+    }, []);
+
+
+  useEffect(() => {
+    setInterval(() => {
+      // Add a new connected node every second
+      setDataGrafoAleatorio(({ nodes, links }) => {
+        const id = nodes.length;
+        return {
+          nodes: [...nodes, { id }],
+          links: [...links, { source: id, target: Math.round(Math.random() * (id-1)) }]
+        };
+      });
+    }, 1000);
+  }, []);
+  */
+
+  useImperativeHandle(ref, () => ({
+
+    GetGrafoAleatorio () {
+      axios.get('/grafo/generaraleatorio')
+        .then(response => {
+          console.log(response.data);
+          setDataGrafoAleatorio(response.data);
+          //FocusGraph.setDataGrafoAleatorio(response.data);
+          return response.data;
+        })
+        .catch(error => {
+          return error;
+        })
+    },
+
+    AddNode () {
+      setDataGrafoAleatorio(({ nodes, links }) => {
+        const id = nodes.length;
+        return {
+          nodes: [...nodes, 
+            { "id": id ,
+            "name": `name${id}`,
+            "val": 15}],
+          links: [...links ]
+        };
+      });
+    },
+
+
+    cleanValue () {
+      setCanRemove(true);
+    }
+
+  }));
+
+
+
     return <ForceGraph3D
       ref={fgRef}
       graphData={dataGrafoAleatorio}
@@ -160,22 +233,27 @@ function App() {
       linkThreeObjectExtend={true}
       linkThreeObject={link => {
         // extend link with text sprite
-        const sprite = new SpriteText(`${link.weight}`);
-        sprite.color = 'lightgrey';
-        sprite.textHeight = 1.5;
-        return sprite;
+
+          const sprite = new SpriteText(`${link.weight}`);
+          sprite.color = 'lightgrey';
+          sprite.textHeight = 1.5;
+          return sprite;
+
+        
       }}
       linkPositionUpdate={(sprite, { start, end }) => {
-        const middlePos = Object.assign(...['x', 'y', 'z'].map(c => ({
-          [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
-        })));
 
-        // Position sprite
-        Object.assign(sprite.position, middlePos);
+          const middlePos = Object.assign(...['x', 'y', 'z'].map(c => ({
+            [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
+          })));
+  
+          // Position sprite
+          Object.assign(sprite.position, middlePos);
+        
       }}
 
     />;
-  };
+  });
 
   return (
     <div className="App">
@@ -202,7 +280,7 @@ function App() {
             <Dropdown.Item eventKey="1" className='glow-on-hover text-white'><span>Personalizado</span></Dropdown.Item>
             <Dropdown.Item eventKey="2" className='glow-on-hover text-white' 
               onClick={
-                () => GetGrafoAleatorio() 
+                () => childRef.current.GetGrafoAleatorio()
               }>
               <span>Aleatorio</span>
             </Dropdown.Item>
@@ -255,9 +333,23 @@ function App() {
             autoClose="inside"
             menuVariant="dark"
           >
-            <Dropdown.Item eventKey="1" className='glow-on-hover text-white'><span>Agregar</span></Dropdown.Item>
+            <Dropdown.Item eventKey="1" className='glow-on-hover text-white'
+            onClick={
+              () => childRef.current.AddNode()
+            }>
+              <span>
+                Agregar
+              </span>
+            </Dropdown.Item>
             <Dropdown.Item eventKey="2" className='glow-on-hover text-white'><span>Editar</span></Dropdown.Item>
-            <Dropdown.Item eventKey="2" className='glow-on-hover text-white'><span>Eliminar</span></Dropdown.Item>
+            <Dropdown.Item eventKey="2" className='glow-on-hover text-white'
+            onClick={
+              () => childRef.current.cleanValue()
+            }>
+              <span>
+                Eliminar
+              </span>
+            </Dropdown.Item>
           </DropdownButton>
 
           <DropdownButton
@@ -380,7 +472,7 @@ function App() {
       </Container>
     </Navbar>
       
-    <FocusGraph />
+    <FocusGraph ref={childRef}/>
 
     </div>
   );
