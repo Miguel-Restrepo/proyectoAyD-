@@ -20,3 +20,9 @@ class Algoritmo(models.Model):
     NombreAlgoritmo= models.CharField(max_length=500)
     RutaAlgoritmo= models.CharField(max_length=500)
     OrdenAlgoritmo= models.CharField(max_length=500)
+class HistorialEjecutciones(models.Model):
+    HistorialId = models.AutoField(primary_key=True)
+    GrafoId=models.IntegerField()
+    AlgoritmoId=models.IntegerField()
+    TiempoTeorico=models.IntegerField()
+    TiempoReal=models.IntegerField()

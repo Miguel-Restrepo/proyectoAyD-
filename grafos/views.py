@@ -57,7 +57,7 @@ def grafoAleatorio(request, id=0):
         completo = random.randint(0, 1)
         if completo == 1:
             bipartito = 0
-        numeroNodos = random.randint(2, 10)
+        numeroNodos = random.randint(2, 15)
         numeroAristas = random.randint(
             numeroNodos-1, numeroNodos*2+numeroNodos)
         nombre = get_random_string(length=5, allowed_chars='AEIOUJM')
@@ -88,7 +88,7 @@ def grafoAleatorio(request, id=0):
                 numeroNodos-1, numeroNodos*2+numeroNodos)
             nombre = get_random_string(length=5, allowed_chars='AEIOUJM')
             grafo = generarGrafo(nombre, numeroNodos, numeroAristas, dirigido,
-                                ponderado, conexo, multigrafo, ciclico, aciclico, bipartito, completo)
+                                 ponderado, conexo, multigrafo, ciclico, aciclico, bipartito, completo)
             # grafo_serializers=GrafoSerializers(data=grafo)
             # if grafo_serializers.is_valid():
             #   grafo_serializers.save()
@@ -121,9 +121,9 @@ def generarGrafo(nombre, numeroNodos, numeroAristas, dirigido, ponderado, conexo
                 "id": i,
                 "name": "nombre{}".format(i)
             })
-    aristas=[]
-    if completo==1:
-        aristas=generarCompleto(nodos,ponderado)
+    aristas = []
+    if completo == 1:
+        aristas = generarCompleto(nodos, ponderado)
 
     elif conexo == 1:
         aristas = generarAristasConexasRecursivoNoDirigido(
@@ -139,7 +139,7 @@ def generarGrafo(nombre, numeroNodos, numeroAristas, dirigido, ponderado, conexo
         else:
             aristas = eliminarMultigrafo(aristas)
     else:
-        aristas= generarNoConexo(len(nodos),numeroAristas, ponderado)
+        aristas = generarNoConexo(len(nodos), numeroAristas, ponderado)
 
     grafo = {
         "NombreGrafo": nombre,
@@ -156,59 +156,70 @@ def generarGrafo(nombre, numeroNodos, numeroAristas, dirigido, ponderado, conexo
     }
     return grafo
 
+
 def generarCompleto(listaNodos: list, ponderado):
-    listaAristas=[]
+    listaAristas = []
     for i in listaNodos:
         for j in listaNodos:
-            if i!=j:
-                if ponderado==1:
+            if i != j:
+                if ponderado == 1:
                     pesoArista = random.randint(5, 20)
                     listaAristas.append({
                         "source": i["id"],
                         "target": j["id"],
-                        "weight": pesoArista
+                        "weight": pesoArista,
+                        "curvature": random.random(), 
+                        "rotation": 0
                     })
                 else:
-                      listaAristas.append({
+                    listaAristas.append({
                         "source": i["id"],
-                        "target": j["id"]
-                    })
-    return  listaAristas
-def generarNoConexo(numeroNodos , numeroAristas, ponderado):
-    aristas=[]
-    for i in range(1,numeroAristas):
-       
-        nodoOrigen= random.randint(1,numeroNodos)
-        nodoDestino= random.randint(1,numeroNodos)
-        if ponderado==1:
-            pesoArista = random.randint(5,20)
-            if nodoOrigen==nodoDestino:
-                aristas.append( {
-                        "source": nodoOrigen,
-                        "target": nodoDestino,
-                        "curvature": 1, 
-                        "rotation": 0,
-                        "weight": pesoArista 
-                    } )
-            else:
-                aristas.append( {
-                            "source": nodoOrigen,
-                            "target": nodoDestino,
-                            "weight": pesoArista
-                        })
-        else:
-            if nodoOrigen==nodoDestino:
-                aristas.append( {
-                        "source": nodoOrigen,
-                        "target": nodoDestino,
-                        "curvature": 1, 
+                        "target": j["id"],
+                        "curvature": random.random(), 
                         "rotation": 0
-                    } )
+                    })
+    return listaAristas
+
+
+def generarNoConexo(numeroNodos, numeroAristas, ponderado):
+    aristas = []
+    for i in range(1, numeroAristas):
+
+        nodoOrigen = random.randint(1, numeroNodos)
+        nodoDestino = random.randint(1, numeroNodos)
+        if ponderado == 1:
+            pesoArista = random.randint(5, 20)
+            if nodoOrigen == nodoDestino:
+                aristas.append({
+                    "source": nodoOrigen,
+                    "target": nodoDestino,
+                    "curvature": random.random(),
+                    "rotation": 0,
+                    "weight": pesoArista
+                })
             else:
-                aristas.append( {
-                            "source": nodoOrigen,
-                            "target": nodoDestino
-                        })
+                aristas.append({
+                    "source": nodoOrigen,
+                    "target": nodoDestino,
+                    "weight": pesoArista,
+                    "curvature": random.random(),
+                    "rotation": 0
+                })
+        else:
+            if nodoOrigen == nodoDestino:
+                aristas.append({
+                    "source": nodoOrigen,
+                    "target": nodoDestino,
+                    "curvature": random.random(),
+                    "rotation": 0
+                })
+            else:
+                aristas.append({
+                    "source": nodoOrigen,
+                    "target": nodoDestino,
+                    "curvature": random.random(), 
+                        "rotation": 0
+                })
     return aristas
 
 
@@ -223,12 +234,16 @@ def generarAristasConexasRecursivoNoDirigido(listaNodos, nodosVisitados: list, n
         listaAristas.append({
             "source": nodoOrigen,
             "target": nodoDestino,
-            "weight": pesoArista
+            "weight": pesoArista,
+            "curvature": random.random(), 
+                        "rotation": 0
         })
     else:
         listaAristas.append({
             "source": nodoOrigen,
-            "target": nodoDestino
+            "target": nodoDestino,
+            "curvature": random.random(), 
+                        "rotation": 0
         })
     return generarAristasConexasRecursivoNoDirigido(listaNodos, nodosVisitados, nodoVoy+1, listaAristas, ponderado)
 
@@ -300,12 +315,16 @@ def generarAristasFaltantes(listaNodos, nodosVisitados, listaAristas, maximo, po
             listaAristas.append({
                 "source": nodoOrigen,
                 "target": nodoDestino,
-                "weight": pesoArista
+                "weight": pesoArista,
+                "curvature": random.random(), 
+                        "rotation": 0
             })
         else:
             listaAristas.append({
                 "source": nodoOrigen,
-                "target": nodoDestino
+                "target": nodoDestino,
+                "curvature": random.random(), 
+                        "rotation": 0
             })
         return listaAristas
     for i in listaNodos:
@@ -316,7 +335,9 @@ def generarAristasFaltantes(listaNodos, nodosVisitados, listaAristas, maximo, po
         listaAristas.append({
             "source": nodoOrigen,
             "target": nodoDestino,
-            "weight": pesoArista
+            "weight": pesoArista,
+            "curvature": random.random(), 
+                        "rotation": 0
         })
     return listaAristas
 
@@ -329,12 +350,16 @@ def generarMultigrafo(aristas, ponderado):
         aristas.append({
             "source": nodoOrigen,
             "target": nodoDestino,
-            "weight": pesoArista
+            "weight": pesoArista,
+            "curvature": random.random(), 
+                        "rotation": 0
         })
     else:
         aristas.append({
             "source": nodoOrigen,
-            "target": nodoDestino
+            "target": nodoDestino,
+            "curvature": random.random(), 
+                        "rotation": 0
         })
     return aristas
 
