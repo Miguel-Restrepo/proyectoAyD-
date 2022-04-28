@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from grafos.models import Grafo, Algoritmo, HistorialEjecutciones
+from grafos.models import Grafo, Algoritmo, HistorialEjecuciones
 
 class GrafoSerializers(serializers.ModelSerializer):
     class Meta:
@@ -13,6 +13,6 @@ class AlgoritmoSerializers(serializers.ModelSerializer):
         fields = '__all__' 
 class HistorialEjecucionesSerializers(serializers.ModelSerializer):
     class Meta:
-        model=HistorialEjecutciones
+        model=HistorialEjecuciones
         field=('HistorialId','GrafoId','AlgoritmoId','TiempoTeorico', 'TiempoReal')
         fields = '__all__' 

@@ -14,22 +14,22 @@ from grafos.serializers import GrafoSerializers, AlgoritmoSerializers
 
 @csrf_exempt
 def grafoApi(request, id=0):
-    if request.method == 'GET' and id != 0:
+    if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
         grafo = Grafo.objects.filter(GrafoId=id)
         grafo_serializers = GrafoSerializers(grafo, many=True)
         return JsonResponse(grafo_serializers.data[0], safe=False)
-    if request.method == 'GET':
+    if request.method == 'GET':# me retorna todos los grafos existentes en la base de datos
         grafo = Grafo.objects.all()
         grafo_serializers = GrafoSerializers(grafo, many=True)
         return JsonResponse(grafo_serializers.data, safe=False)
-    elif request.method == 'POST':
+    elif request.method == 'POST':#me guarda un grafo
         grafo_data = JSONParser().parse(request)
         grafo_serializers = GrafoSerializers(data=grafo_data)
         if grafo_serializers.is_valid():
             grafo_serializers.save()
             return JsonResponse("Se agrego con exito", safe=False)
         return JsonResponse("Fallo la insersion", safe=False)
-    elif request.method == 'PUT':
+    elif request.method == 'PUT':#Me actualiza un grafo existente
         grafo_data = JSONParser().parse(request)
         grafo = Grafo.objects.get(GrafoId=grafo_data['GrafoId'])
         grafo_serializers = GrafoSerializers(grafo, data=grafo_data)
@@ -37,14 +37,14 @@ def grafoApi(request, id=0):
             grafo_serializers.save()
             return JsonResponse("Actualizado con exito", safe=False)
         return JsonResponse("Fallo la actualizacion", safe=False)
-    elif request.method == 'DELETE':
+    elif request.method == 'DELETE':#Me elimina un grafo con un id especifico
         grafo = Grafo.objects.get(GrafoId=id)
         grafo.delete()
         return JsonResponse("Eliminacion con exito", safe=False)
 
 
 def grafoAleatorio(request, id=0):
-    if request.method == 'GET':
+    if request.method == 'GET':#Me genera un grafo completamente aleatorio
         dirigido = random.randint(0, 1)
         ponderado = random.randint(0, 1)
         conexo = random.randint(0, 1)
@@ -67,7 +67,7 @@ def grafoAleatorio(request, id=0):
         # if grafo_serializers.is_valid():
         #   grafo_serializers.save()
         return JsonResponse(grafo, safe=False)
-    elif request.method == 'POST':
+    elif request.method == 'POST':#Me crea  un grafo de forma aleatoria apartir de unos parametros
         grafo_data = JSONParser().parse(request)
         grafo_serializers = GrafoSerializers(data=grafo_data)
         if grafo_serializers.is_valid():
@@ -97,7 +97,7 @@ def grafoAleatorio(request, id=0):
 
 
 def grafoValidar(request):
-    if request.method == 'POST':
+    if request.method == 'POST':#Me valida que un grafo cumpla con los parametros
         grafo_data = JSONParser().parse(request)
         grafo_serializers = GrafoSerializers(data=grafo_data)
         if grafo_serializers.is_valid():

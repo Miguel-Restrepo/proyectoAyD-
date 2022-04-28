@@ -14,15 +14,15 @@ class Grafo(models.Model):
     Aciclico=models.IntegerField()
     Bipartito=models.IntegerField()
     Completo=models.IntegerField()
-    
 class Algoritmo(models.Model):
     AlgoritmoId = models.AutoField(primary_key=True)
     NombreAlgoritmo= models.CharField(max_length=500)
     RutaAlgoritmo= models.CharField(max_length=500)
     OrdenAlgoritmo= models.CharField(max_length=500)
-class HistorialEjecutciones(models.Model):
+class HistorialEjecuciones(models.Model):
     HistorialId = models.AutoField(primary_key=True)
     GrafoId=models.IntegerField()
     AlgoritmoId=models.IntegerField()
+    Ecuacion= models.CharField(max_length=500)
     TiempoTeorico=models.IntegerField()
     TiempoReal=models.IntegerField()
