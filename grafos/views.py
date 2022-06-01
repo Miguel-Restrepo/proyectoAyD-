@@ -420,11 +420,11 @@ def MatrizAdyacencia(request, id=0):
         grafo = Grafo.objects.filter(GrafoId=id)
         grafo_serializers = GrafoSerializers(grafo, many=True)
         grafo= JsonResponse(grafo_serializers.data[0], safe=False)
-        grafo.matriz=[[1,1,0,1],
+        matriz=[[1,1,0,1],
                 [1,0,1,0],
                 [0,1,1,0],
                 [1,0,0,1]]
-        return grafo
+        return JsonResponse(matriz, safe=False)
         
 def AlgoritmoQueyranne(request, id=0):
     if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
