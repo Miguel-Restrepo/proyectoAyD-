@@ -146,7 +146,7 @@ function App() {
 
           // Remove link on click
           console.log(links);
-          const newLinks = links.filter((l) => l.id !== link.id);
+          const newLinks = links.filter((l) => l.index !== link.index);
           console.log(newLinks);
           console.log("hola");
           console.log(link.id);
@@ -465,19 +465,19 @@ function App() {
                   eventKey="1"
                   className="glow-on-hover text-white"
                 >
-                  <span>Algoritmo 1</span>
+                  <span>Algoritmo de Queyranne</span>
                 </Dropdown.Item>
                 <Dropdown.Item
                   eventKey="2"
                   className="glow-on-hover text-white"
                 >
-                  <span>Algoritmo 2</span>
+                  <span>Algoritmo Mssf</span>
                 </Dropdown.Item>
                 <Dropdown.Item
                   eventKey="2"
                   className="glow-on-hover text-white"
                 >
-                  <span>Algoritmo 3</span>
+                  <span>Algoritmo Q Clustering</span>
                 </Dropdown.Item>
                 <Dropdown.Item
                   eventKey="2"
