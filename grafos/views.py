@@ -5,6 +5,7 @@ from django.http.response import JsonResponse
 from django.utils.crypto import get_random_string
 from grafos.models import Grafo, Algoritmo
 import random
+from grafos.algoritmos import *
 from random import choice
 from grafos.serializers import GrafoSerializers, AlgoritmoSerializers
 #from modelos.grafo import *
@@ -414,3 +415,29 @@ def verificarCompleto():
 
 def verificarPonderado():
     return True
+def MatrizAdyacencia(request, id=0):
+    if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
+        grafo = Grafo.objects.filter(GrafoId=id)
+        grafo_serializers = GrafoSerializers(grafo, many=True)
+        grafo= JsonResponse(grafo_serializers.data[0], safe=False)
+        grafo.matriz=[[1,1,0,1],
+                [1,0,1,0],
+                [0,1,1,0],
+                [1,0,0,1]]
+        return grafo
+        
+def AlgoritmoQueyranne(request, id=0):
+    if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
+        grafo = Grafo.objects.filter(GrafoId=id)
+        grafo_serializers = GrafoSerializers(grafo, many=True)
+        return AlgoritmoQueyranne(JsonResponse(grafo_serializers.data[0], safe=False))
+def AlgoritmoMssf(request, id=0):
+    if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
+        grafo = Grafo.objects.filter(GrafoId=id)
+        grafo_serializers = GrafoSerializers(grafo, many=True)
+        return AlgoritmoMssf(JsonResponse(grafo_serializers.data[0], safe=False))
+def AlgoritmoQ_Clustering(request, id=0):
+    if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
+        grafo = Grafo.objects.filter(GrafoId=id)
+        grafo_serializers = GrafoSerializers(grafo, many=True)
+        return AlgoritmoQ_Clustering(JsonResponse(grafo_serializers.data[0], safe=False))
