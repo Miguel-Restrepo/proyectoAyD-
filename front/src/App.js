@@ -211,6 +211,19 @@ function App() {
           });
       },
 
+      PostGuardarGrafo() {
+        axios
+          .post("/grafo",dataGrafoAleatorio)
+          .then((response) => {
+            console.log(response.data);
+            return response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+      },
+
       AddNode() {
         setDataGrafoAleatorio(({ nodes, links }) => {
           const id = nodes.length;
@@ -318,7 +331,10 @@ function App() {
               <Dropdown.Item href="#" className="glow-on-hover text-white">
                 <span>Cerrar</span>
               </Dropdown.Item>
-              <Dropdown.Item href="#" className="glow-on-hover text-white">
+              <Dropdown.Item  
+                className="glow-on-hover text-white"
+                onClick={() => childRef.current.PostGuardarGrafo()}
+              >
                 <span>Guardar</span>
               </Dropdown.Item>
               <Dropdown.Item href="#" className="glow-on-hover text-white">
