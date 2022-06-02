@@ -165,11 +165,11 @@ function App() {
       //distancia de acuerdo a atributo
       //fg.d3Force('link').distance(link => {return link.weight});
 
-      const bloomPass = new UnrealBloomPass();
-      bloomPass.strength = 1.65;
-      bloomPass.radius = 0.18;
-      bloomPass.threshold = 0.15;
-      fgRef.current.postProcessingComposer().addPass(bloomPass);
+      //const bloomPass = new UnrealBloomPass();
+      //bloomPass.strength = 1.65;
+      //bloomPass.radius = 0.18;
+      //bloomPass.threshold = 0.15;
+      //fgRef.current.postProcessingComposer().addPass(bloomPass);
     }, []);
 
     /** 
@@ -214,6 +214,33 @@ function App() {
       PostGuardarGrafo() {
         axios
           .post("/grafo",dataGrafoAleatorio)
+          .then((response) => {
+            console.log(response.data);
+            setDataGrafoAleatorio(response.data);
+            return response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+      },
+
+      GetQueyranne() {
+        axios
+          .get("/queyranne/8")
+          .then((response) => {
+            console.log(response.data);
+            return response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+      },
+
+      GetMssf() {
+        axios
+          .get("/mssf/8")
           .then((response) => {
             console.log(response.data);
             return response.data;
@@ -476,6 +503,7 @@ function App() {
                 <Dropdown.Item
                   eventKey="1"
                   className="glow-on-hover text-white"
+                  onClick={() => childRef.current.GetQueyranne()}
                 >
                   <span>Algoritmo de Queyranne</span>
                 </Dropdown.Item>
@@ -488,6 +516,7 @@ function App() {
                 <Dropdown.Item
                   eventKey="2"
                   className="glow-on-hover text-white"
+                  onClick={() => childRef.current.GetMssf()}
                 >
                   <span>Algoritmo Q Clustering</span>
                 </Dropdown.Item>
