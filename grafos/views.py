@@ -28,7 +28,7 @@ def grafoApi(request, id=0):
         grafo_serializers = GrafoSerializers(data=grafo_data)
         if grafo_serializers.is_valid():
             grafo_serializers.save()
-            return JsonResponse(grafo_serializers, safe=False)
+            return JsonResponse(grafo_serializers.data, safe=False)
         return JsonResponse("Fallo la insersion", safe=False)
     elif request.method == 'PUT':#Me actualiza un grafo existente
         grafo_data = JSONParser().parse(request)
