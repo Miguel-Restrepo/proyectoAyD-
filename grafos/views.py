@@ -430,7 +430,7 @@ def AlgoritmoQueyranne(request, id=0):
     if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
         grafo = Grafo.objects.filter(GrafoId=id)
         grafo_serializers = GrafoSerializers(grafo, many=True)
-        return AlgoritmoQueyranne(JsonResponse(grafo_serializers.data[0], safe=False))
+        return AlgoritQueyranne(JsonResponse(grafo_serializers.data[0], safe=False))
 def AlgoritmoMssf(request, id=0):
     if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
         grafo = Grafo.objects.filter(GrafoId=id)
@@ -440,4 +440,4 @@ def AlgoritmoQ_Clustering(request, id=0):
     if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
         grafo = Grafo.objects.filter(GrafoId=id)
         grafo_serializers = GrafoSerializers(grafo, many=True)
-        return AlgoritmoQ_Clustering(JsonResponse(grafo_serializers.data[0], safe=False))
+        return AlgoritQ_Clustering(JsonResponse(grafo_serializers.data[0], safe=False))
