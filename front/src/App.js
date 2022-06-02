@@ -131,7 +131,7 @@ function App() {
           const newNodes = nodes.filter((l) => l !== node);
           console.log(newNodes);
 
-          setDataGrafoAleatorio({ nodes: newNodes, links: newLinks });
+          setDataGrafoAleatorio({ ...dataGrafoAleatorio, nodes: newNodes, links: newLinks });
           setCanRemoveNode(false);
         }
       },
@@ -151,7 +151,7 @@ function App() {
           console.log("hola");
           console.log(link.id);
 
-          setDataGrafoAleatorio({ nodes: nodes, links: newLinks });
+          setDataGrafoAleatorio({ ...dataGrafoAleatorio, nodes: nodes, links: newLinks });
           console.log(dataGrafoAleatorio);
           setCanRemoveLink(false);
         }
@@ -215,6 +215,7 @@ function App() {
         setDataGrafoAleatorio(({ nodes, links }) => {
           const id = nodes.length;
           return {
+            ...dataGrafoAleatorio,
             nodes: [...nodes, { id: id, name: `name${id}`, val: 15 }],
             links: [...links],
           };
@@ -269,12 +270,7 @@ function App() {
         }}
         cooldownTicks={cooldownTicks}
         onNodeDragEnd={() => setCooldownTicks(undefined)}
-        linkDirectionalArrowLength={() => {
-          if (dataGrafoAleatorio.Dirigido === 1) return 3.5;
-          else {
-            return 0;
-          }
-        }}
+        linkDirectionalArrowLength={dataGrafoAleatorio.Dirigido === 1 ? 3.5 : 0}
         linkDirectionalArrowRelPos={1}
       />
     );
