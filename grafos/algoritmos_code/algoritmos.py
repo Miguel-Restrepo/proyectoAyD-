@@ -1,9 +1,11 @@
+import time
 #--------------------------------------------------QUEYRANNE 2 PARTICIONES-------------------------------------------
 #-------------------------------------------------Q_CLUSTERING K PARTICIONES-------------------------------------------
 import math; #For pow and sqrt
 import sys;
 from random import shuffle, uniform;
 import matplotlib.pyplot as plt
+import threading #Hilo para grafica
 #Convierte lo original en el formato necesitado
 def convertir(grafo):
     items=[]
@@ -22,12 +24,11 @@ def desconvertir(grafo,particiones):
         for nodo in grafo["nodes"]:
             if nodo['id']==mean[0]:
                 nodo["color"]=colores[color]
+    grafo["links"]=[]
     return grafo
-        
 
 
-
-###_Auxiliary Function_###
+# funcion auxiliar
 def FindColMinMax(items):
     n = len(items[0]);
     minima = [sys.maxsize for i in range(n)];
@@ -44,23 +45,23 @@ def FindColMinMax(items):
     return minima,maxima;
 
 def EuclideanDistance(x,y):
-    S = 0; #The sum of the squared differences of the elements
+    S = 0; #La suma de las diferencias al cuadrado de los elementos
     for i in range(len(x)):
         S += math.pow(x[i]-y[i],2);
 
-    return math.sqrt(S); #The square root of the sum
+    return math.sqrt(S); #La raíz cuadrada de la suma
 
 def InitializeMeans(items,k,cMin,cMax):
-    #Initialize means to random numbers between
-    #the min and max of each column/feature
+    #Inicializar 'means' a números aleatorios entre
+     #el mínimo y máximo de cada columna/característica
     
-    f = len(items[0]); #number of features
+    f = len(items[0]); #nnúmero de características
     means = [[0 for i in range(f)] for j in range(k)];
     
     for mean in means:
         for i in range(len(mean)):
-            #Set value to a random float
-            #(adding +-1 to avoid a wide placement of a mean)
+            #Establecer valor a un flotador aleatorio
+            #(agregando +-1 para evitar una colocación amplia de una media)
             mean[i] = uniform(cMin[i]+1,cMax[i]-1);
 
     return means;
@@ -74,27 +75,27 @@ def UpdateMean(n,mean,item):
     return mean;
 
 def FindClusters(means,items):
-    clusters = [[] for i in range(len(means))]; #Init clusters
+    clusters = [[] for i in range(len(means))]; #inicializar clusters
     
     for item in items:
-        #Classify item into a cluster
+        #Clasificar elemento en un grupo
         index = Classify(means,item);
 
-        #Add item to cluster
+        #Añadir elemento al clúster
         clusters[index].append(item);
 
     return clusters;
 
 
-###_Core Functions_###
+# funciones mas importantes
 def Classify(means,item):
-    #Classify item to the mean with minimum distance
+    #Clasificar elemento mean con distancia mínima
     
     minimum = sys.maxsize;
     index = -1;
 
     for i in range(len(means)):
-        #Find distance from item to mean
+        #Encontrar la distancia del elemento a mean
         dis = EuclideanDistance(item,means[i]);
 
         if(dis < minimum):
@@ -104,40 +105,40 @@ def Classify(means,item):
     return index;
 
 def CalculateMeans(k,items,maxIterations=200):
-    #Find the minima and maxima for columns
+    #Encuentra los mínimos y máximos de las columnas
     cMin, cMax = FindColMinMax(items);
     
-    #Initialize means at random points
+    #Inicializar medios en puntos aleatorios
     means = InitializeMeans(items,k,cMin,cMax);
     
-    #Initialize clusters, the array to hold
-    #the number of items in a class
+    #Inicialice los clústeres, la matriz que se mantendrá
+     #el número de artículos en una clase
     clusterSizes = [0 for i in range(len(means))];
 
-    #An array to hold the cluster an item is in
+    #Una matriz para contener el grupo en el que se encuentra un elemento
     belongsTo = [0 for i in range(len(items))];
 
-    #Calculate means
+    #Calculamos means
     for e in range(maxIterations):
-        #If no change of cluster occurs, halt
+        #si no hay cambios salimos
         noChange = True;
         for i in range(len(items)):
             item = items[i];
 
-            #Classify item into a cluster and update the
-            #corresponding means.
+            #Clasificar elemento en un grupo y actualizar el
+             #means correspondientes.
             index = Classify(means,item);
 
             clusterSizes[index] += 1;
             means[index] = UpdateMean(clusterSizes[index],means[index],item);
 
-            #Item changed cluster
+            #Item cambio?
             if(index != belongsTo[i]):
                 noChange = False;
 
             belongsTo[i] = index;
 
-        #Nothing changed, return
+        #SI NADA CAMBIO SALIMOS
         if(noChange):
             break;
 
@@ -155,27 +156,26 @@ def CalculateLossValue(clusters, means):
     return totalLoss / m
 
 
-###_Main_###
+#PRINCIPAL
 def ejecutarQclustering(grafo):
     items =convertir(grafo)
     print(items)
+    #Empezamos a contar el tiempo
+    inicial = time.time()
     lossValues = []
- 
     for k in range(1, len(items)*len(items)):
-
         means = CalculateMeans(k,items);
-        print('means')
-        print(means)
         clusters = FindClusters(means,items);
-        print('clusters')
-        print(clusters)
         lossValue = CalculateLossValue(clusters, means)
         lossValues.append(lossValue)
         print(math.sqrt(lossValue))
-    
+
+    #dejamos de contar el tiempo
+    final = time.time()
+    grafo["tiempo"]=final-inicial
     plt.plot(lossValues)
     plt.xlabel('k')
-    plt.ylabel('loss value')
+    plt.ylabel('perdida')
     plt.grid(True)
     plt.show()
     return desconvertir(grafo,means)
