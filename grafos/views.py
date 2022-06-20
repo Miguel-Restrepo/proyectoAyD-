@@ -431,6 +431,8 @@ def MatrizAdyacencia(request, id=0):
                 for arista in grafoAccesible["links"]:
                     if nodoP["id"]== arista["source"] and nodo["id"]== arista["target"]:
                         posicion=1
+                    elif nodoP["id"]== arista["source"]["id"] and nodo["id"]== arista["target"]["id"]:
+                        posicion=1
                 fila.append(posicion)
             matriz.append(fila)
         
