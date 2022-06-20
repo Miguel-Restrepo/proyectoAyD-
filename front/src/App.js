@@ -22,89 +22,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 function App() {
   const childRef = useRef();
 
-  let myData = {
-    nodes: [
-      {
-        id: 1,
-        name: "name1",
-        val: 10,
-      },
-      {
-        id: 2,
-        name: "name2",
-        val: 15,
-      },
-      {
-        id: 3,
-        name: "name3",
-        val: 10,
-      },
-    ],
-    links: [
-      {
-        source: 1,
-        target: 2,
-        weight: 200,
-      },
-      {
-        source: 1,
-        target: 1,
-        curvature: 1,
-        rotation: 0,
-        weight: 100,
-      },
-      {
-        source: 3,
-        target: 1,
-        weight: 100,
-      },
-      {
-        source: 1,
-        target: 3,
-        weight: 100,
-      },
-    ],
-  };
-
-  const gData = {
-    nodes: [...Array(14).keys()].map((i) => ({ id: i })),
-    links: [
-      { source: 0, target: 1, curvature: 0, rotation: 0, id: 23 },
-      { source: 0, target: 1, curvature: 0.8, rotation: 0 },
-      { source: 0, target: 1, curvature: 0.8, rotation: (Math.PI * 1) / 6 },
-      { source: 0, target: 1, curvature: 0.8, rotation: (Math.PI * 2) / 6 },
-      { source: 0, target: 1, curvature: 0.8, rotation: (Math.PI * 3) / 6 },
-      { source: 0, target: 1, curvature: 0.8, rotation: (Math.PI * 4) / 6 },
-      { source: 0, target: 1, curvature: 0.8, rotation: (Math.PI * 5) / 6 },
-      { source: 0, target: 1, curvature: 0.8, rotation: Math.PI },
-      { source: 0, target: 1, curvature: 0.8, rotation: (Math.PI * 7) / 6 },
-      { source: 0, target: 1, curvature: 0.8, rotation: (Math.PI * 8) / 6 },
-      { source: 0, target: 1, curvature: 0.8, rotation: (Math.PI * 9) / 6 },
-      { source: 0, target: 1, curvature: 0.8, rotation: (Math.PI * 10) / 6 },
-      { source: 0, target: 1, curvature: 0.8, rotation: (Math.PI * 11) / 6 },
-      { source: 2, target: 3, curvature: 0.4, rotation: 0 },
-      { source: 3, target: 2, curvature: 0.4, rotation: Math.PI / 2 },
-      { source: 2, target: 3, curvature: 0.4, rotation: Math.PI },
-      { source: 3, target: 2, curvature: 0.4, rotation: -Math.PI / 2 },
-      { source: 4, target: 4, curvature: 0.3, rotation: 0 },
-      { source: 4, target: 4, curvature: 0.3, rotation: (Math.PI * 2) / 3 },
-      { source: 4, target: 4, curvature: 0.3, rotation: (Math.PI * 4) / 3 },
-      { source: 5, target: 6, curvature: 0, rotation: 0, id: 20 },
-      { source: 6, target: 6, curvature: -0.5, rotation: 0 },
-      { source: 7, target: 8, curvature: 0.2, rotation: 0 },
-      { source: 8, target: 9, curvature: 0.5, rotation: 0 },
-      { source: 9, target: 10, curvature: 0.7, rotation: 0 },
-      { source: 10, target: 11, curvature: 1, rotation: 0 },
-      { source: 11, target: 12, curvature: 2, rotation: 0 },
-      { source: 12, target: 7, curvature: 4, rotation: 0 },
-      { source: 13, target: 13, curvature: 0.1, rotation: 0 },
-      { source: 13, target: 13, curvature: 0.2, rotation: 0 },
-      { source: 13, target: 13, curvature: 0.5, rotation: 0 },
-      { source: 13, target: 13, curvature: 0.7, rotation: 0 },
-      { source: 13, target: 13, curvature: 1, rotation: 0 },
-    ],
-  };
-
   const FocusGraph = forwardRef((props, ref) => {
     const fgRef = useRef();
     const [dataGrafoAleatorio, setDataGrafoAleatorio] = useState({
@@ -114,6 +31,8 @@ function App() {
     const [canRemoveNode, setCanRemoveNode] = useState(false);
     const [canRemoveLink, setCanRemoveLink] = useState(false);
     const [cooldownTicks, setCooldownTicks] = useState(undefined);
+    const [grafoId, setGrafoId] = useState(undefined);
+    const [tabla, setTabla] = useState({});
 
     const handleNodeClick = useCallback(
       (node) => {
@@ -211,12 +130,41 @@ function App() {
           });
       },
 
+      GetGrafoPersonalizado() {
+        axios
+          .get("/grafo/generaraleatorio")
+          .then((response) => {
+            console.log(response.data);
+            setDataGrafoAleatorio(response.data);
+            //FocusGraph.setDataGrafoAleatorio(response.data);
+            return response.data;
+          })
+          .catch((error) => {
+            return error;
+          });
+      },
+
       PostGuardarGrafo() {
         axios
           .post("/grafo",dataGrafoAleatorio)
           .then((response) => {
             console.log(response.data);
-            setDataGrafoAleatorio(response.data);
+            //setDataGrafoAleatorio(response.data);
+            setGrafoId(response.data.GrafoId);
+            return response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+      },
+
+      GetMatrizAdyacencia() {
+        axios
+          .get(`/matrizadyacencia/${grafoId}`)
+          .then((response) => {
+            console.log(response.data);
+            setTabla(response.data);
             return response.data;
           })
           .catch((error) => {
@@ -581,7 +529,11 @@ function App() {
               <Dropdown.Item href="#" className="glow-on-hover text-white">
                 <span>Gráfica</span>
               </Dropdown.Item>
-              <Dropdown.Item href="#" className="glow-on-hover text-white">
+              <Dropdown.Item 
+              href="#" 
+              className="glow-on-hover text-white"
+              onClick={() => childRef.current.GetMatrizAdyacencia()}
+              >
                 <span>Tabla</span>
               </Dropdown.Item>
             </Dropdown.Menu>
@@ -608,6 +560,8 @@ function App() {
       </Navbar>
 
       <FocusGraph ref={childRef} />
+      
+
     </div>
   );
 }
