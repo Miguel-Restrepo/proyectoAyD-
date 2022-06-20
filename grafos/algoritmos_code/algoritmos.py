@@ -236,14 +236,18 @@ def convertir(grafo):
     items=[]
     for nodo in grafo["nodes"]:
         for arista in grafo["links"]:
-            if not arista["source"]["id"]:
+            try:
+                if not arista["source"]["id"]:
+                    if nodo["id"]== arista["source"]:
+                        items.append([nodo["id"], nodo["val"]*arista["weight"], nodo["val"], arista["weight"], arista["target"],nodo["id"]])
+                elif nodo["id"]== arista["source"]["id"]:
+                    if grafo["Ponderado"]==1:
+                        items.append([nodo["id"], nodo["val"]*arista["weight"], nodo["val"], arista["weight"], arista["target"]["id"],nodo["id"]])
+                    else:#SI NO ES PONDERADO NO SE HARIA NADA, POR ENDE SE LE DA VALORES PARA CALCULAR TERMPORASLEMTE
+                        items.append([nodo["id"],random.randint(5, 20), random.randint(5, 20), random.randint(5, 20), arista["target"]["id"],nodo["id"]])
+            except:
                 if nodo["id"]== arista["source"]:
                     items.append([nodo["id"], nodo["val"]*arista["weight"], nodo["val"], arista["weight"], arista["target"],nodo["id"]])
-            elif nodo["id"]== arista["source"]["id"]:
-                if grafo["Ponderado"]==1:
-                    items.append([nodo["id"], nodo["val"]*arista["weight"], nodo["val"], arista["weight"], arista["target"]["id"],nodo["id"]])
-                else:#SI NO ES PONDERADO NO SE HARIA NADA, POR ENDE SE LE DA VALORES PARA CALCULAR TERMPORASLEMTE
-                    items.append([nodo["id"],random.randint(5, 20), random.randint(5, 20), random.randint(5, 20), arista["target"]["id"],nodo["id"]])
     print(len(items))
     print(items)
     return items
