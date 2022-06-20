@@ -421,11 +421,19 @@ def MatrizAdyacencia(request, id=0):
         grafo = Grafo.objects.filter(GrafoId=id)
         grafo_serializers = GrafoSerializers(grafo, many=True)
         print(grafo_serializers.data[0]["NombreGrafo"])
-        grafo= JsonResponse(grafo_serializers.data[0], safe=False)
-        matriz=[[1,1,0,1],
-                [1,0,1,0],
-                [0,1,1,0],
-                [1,0,0,1]]
+        grafoAccesible=grafo_serializers.data[0]
+        matriz=[]
+        for nodoP in grafoAccesible["nodes"]:
+            fila=[]
+            
+            for nodo in grafoAccesible["nodes"]:
+                posicion=0
+                for arista in grafoAccesible["links"]:
+                    if nodoP["id"]== arista["source"] and nodo["id"]== arista["target"]:
+                        posicion=1
+                fila.append(posicion)
+            matriz.append(fila)
+        
         return JsonResponse(matriz, safe=False)
         
 def AlgoritmoQueyranne(request, id=0):
