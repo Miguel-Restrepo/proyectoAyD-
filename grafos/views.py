@@ -8,6 +8,7 @@ import random
 from grafos.algoritmos import *
 from random import choice
 from grafos.serializers import GrafoSerializers, AlgoritmoSerializers
+from grafos.algoritmos_code import algoritmos
 #from modelos.grafo import *
 
 # Create your views here.
@@ -419,6 +420,7 @@ def MatrizAdyacencia(request, id=0):
     if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
         grafo = Grafo.objects.filter(GrafoId=id)
         grafo_serializers = GrafoSerializers(grafo, many=True)
+        print(grafo_serializers.data[0]["NombreGrafo"])
         grafo= JsonResponse(grafo_serializers.data[0], safe=False)
         matriz=[[1,1,0,1],
                 [1,0,1,0],
@@ -441,3 +443,11 @@ def AlgoritmoQ_Clustering(request, id=0):
         grafo = Grafo.objects.filter(GrafoId=id)
         grafo_serializers = GrafoSerializers(grafo, many=True)
         return AlgoritQ_Clustering(JsonResponse(grafo_serializers.data[0], safe=False))
+def AlgoritmoQ_ClusteringK(request, id=0):
+    if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
+        grafo = Grafo.objects.filter(GrafoId=id)
+        grafo_serializers = GrafoSerializers(grafo, many=True)
+        #print(grafo_serializers.data[0]["nodes"])
+        return JsonResponse(algoritmos.ejecutarQclustering(grafo_serializers.data[0]), safe=False)
+        
+

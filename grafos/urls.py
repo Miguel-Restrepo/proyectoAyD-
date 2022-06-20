@@ -9,6 +9,7 @@ urlpatterns=[
     path('grafo/validar', views.grafoValidar),
     path('matrizadyacencia/<int:id>', views.MatrizAdyacencia),
     path('q_clustering/<int:id>', views.AlgoritmoQ_Clustering),
+    path('q_clusteringK/<int:id>', views.AlgoritmoQ_ClusteringK),
     path('queyranne/<int:id>', views.AlgoritmoQueyranne),
     path('mssf/<int:id>', views.AlgoritmoMssf)
 ]
