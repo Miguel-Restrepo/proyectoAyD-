@@ -222,20 +222,51 @@ def QUEYRANNE(SS, F):
     return subset_opt, partition_value, cluster_max
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # -------------------------------------------------Q_CLUSTERING Bi PARTICIONES-------------------------------------------
 
 def desconvertirBi(grafo, particiones):
     colores = ["#1976D2", "#E13918"]
+    divisor = round(particiones[0][0])
+    if divisor == 1:
+        divisor = divisor+1
     color = -1
     for mean in particiones:
         color = color+1
         for nodo in grafo["nodes"]:
-            if nodo['id'] == mean[0]:
-                nodo["color"] = colores[color]
+            if nodo['id'] >= mean[0]:
+                nodo["color"] = colores[0]
+            else:
+                nodo["color"] = colores[1]
     links = []
-    divisor = round(particiones[0][0])
-    if divisor == 1:
-        divisor = divisor+1
+    
     for arista in grafo["links"]:
         try:
             if not arista["source"]["id"]:
@@ -298,6 +329,29 @@ def ejecutarQclusteringBi(grafo):
     final = time.time()
     grafo["tiempo"] = final-inicial
     return desconvertirBi(grafo, means)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # -------------------------------------------------Q_CLUSTERING K PARTICIONES-------------------------------------------
