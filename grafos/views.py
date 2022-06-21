@@ -442,6 +442,7 @@ def AlgoritmoQueyranne(request, id=0):
     if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
         grafo = Grafo.objects.filter(GrafoId=id)
         grafo_serializers = GrafoSerializers(grafo, many=True)
+        return JsonResponse(algoritmos.QueyranneIniciar(grafo_serializers.data[0]), safe=False)
         return AlgoritQueyranne(JsonResponse(grafo_serializers.data[0], safe=False))
 def AlgoritmoMssf(request, id=0):
     if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado

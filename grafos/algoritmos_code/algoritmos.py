@@ -176,7 +176,17 @@ def fuse(A, B):
     return f
 
 # -*- Full implementation of Queyranne's algorithm -*-
-
+def QueyranneIniciar(grafo):
+    items = convertir(grafo)
+    items= np.array(items)
+    print(items)
+    # Empezamos a contar el tiempo
+    inicial = time.time()
+    F=None
+    subset_opt, partition_value, cluster_max =QUEYRANNE(items,F)
+    final = time.time()
+    grafo["tiempo"] = final-inicial
+    return desconvertir(grafo, subset_opt)
 
 def QUEYRANNE(SS, F):
     # """" type: (matrix, function) -> (list, float, list)
@@ -261,7 +271,7 @@ def desconvertirBi(grafo, particiones):
     for mean in particiones:
         color = color+1
         for nodo in grafo["nodes"]:
-            if nodo['id'] >= mean[0]:
+            if nodo['id'] >= round(mean[0]):
                 nodo["color"] = colores[0]
             else:
                 nodo["color"] = colores[1]
