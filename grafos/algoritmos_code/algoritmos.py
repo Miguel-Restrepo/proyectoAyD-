@@ -230,7 +230,9 @@ def desconvertirBi(grafo,particiones):
                 nodo["color"]=colores[color]
     links=[]
     divisor=round(particiones[0][0])
-    
+    if divisor==1:
+        divisor=divisor+1
+    print(divisor)
     for arista in grafo["links"]:
         try:
             if not arista["source"]["id"]:
