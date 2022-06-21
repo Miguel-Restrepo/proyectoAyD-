@@ -452,7 +452,7 @@ def AlgoritmoQ_Clustering(request, id=0):
     if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
         grafo = Grafo.objects.filter(GrafoId=id)
         grafo_serializers = GrafoSerializers(grafo, many=True)
-        return AlgoritQ_Clustering(JsonResponse(grafo_serializers.data[0], safe=False))
+        return JsonResponse(algoritmos.ejecutarQclusteringBi(grafo_serializers.data[0]), safe=False)
 def AlgoritmoQ_ClusteringK(request, id=0):
     if request.method == 'GET' and id != 0:# retorna el grafo con el id indicado
         grafo = Grafo.objects.filter(GrafoId=id)
