@@ -199,6 +199,20 @@ function App() {
           });
       },
 
+      GetQClustering() {
+        axios
+          .get("/q_clusteringK/12")
+          .then((response) => {
+            console.log(response.data);
+            setDataGrafoAleatorio(response.data);
+            return response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+      },
+
       AddNode() {
         setDataGrafoAleatorio(({ nodes, links }) => {
           const id = nodes.length;
@@ -232,7 +246,7 @@ function App() {
         onLinkClick={handleLinkClick}
         linkCurvature="curvature"
         linkCurveRotation="rotation"
-        nodeAutoColorBy="id"
+        nodeColor={ (node) => {return node.color} }
         linkThreeObjectExtend={true}
         linkThreeObject={(link) => {
           // extend link with text sprite
@@ -458,13 +472,14 @@ function App() {
                 <Dropdown.Item
                   eventKey="2"
                   className="glow-on-hover text-white"
+                  onClick={() => childRef.current.GetMssf()}
                 >
                   <span>Algoritmo Mssf</span>
                 </Dropdown.Item>
                 <Dropdown.Item
                   eventKey="2"
                   className="glow-on-hover text-white"
-                  onClick={() => childRef.current.GetMssf()}
+                  onClick={() => childRef.current.GetQClustering()}
                 >
                   <span>Algoritmo Q Clustering</span>
                 </Dropdown.Item>
