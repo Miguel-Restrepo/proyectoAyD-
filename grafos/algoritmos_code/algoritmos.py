@@ -261,7 +261,20 @@ def desconvertir(grafo,particiones):
         for nodo in grafo["nodes"]:
             if nodo['id']==mean[0]:
                 nodo["color"]=colores[color]
-    grafo["links"]=[]
+    links=[]
+    for arista in grafo["links"]:
+        try:
+            if not arista["source"]["id"]:
+                if arista["target"]== arista["source"]:
+                    links.append(arista)
+            elif arista["target"]["id"]== arista["source"]["id"]:
+                links.append(arista)
+        except:
+            if arista["target"]== arista["source"]:
+                links.append(arista)
+ 
+
+    grafo["links"]=links
     return grafo
 
 
