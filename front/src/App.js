@@ -201,7 +201,7 @@ function App() {
 
       GetQClustering() {
         axios
-          .get("/q_clusteringK/12")
+          .get(`/q_clustering/${grafoId}`)
           .then((response) => {
             console.log(response.data);
             setDataGrafoAleatorio(response.data);
