@@ -7,6 +7,7 @@ import {
   useRef,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useState,
   forwardRef,
   useImperativeHandle,
@@ -20,9 +21,11 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Modal from 'react-bootstrap/Modal'
 import Button from "react-bootstrap/esm/Button";
+import { TriangleStripDrawMode } from "three";
 
 function App() {
   const childRef = useRef();
+  const didMount = useRef(false);
 
   const FocusGraph = React.memo(forwardRef((props, ref) => {
     const fgRef = useRef();
@@ -45,6 +48,8 @@ function App() {
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
+
+    const[Tiempo, setTiempo] = useState();
 
     const handleNodeClick = useCallback(
       (node) => {
@@ -139,6 +144,13 @@ function App() {
     }, 1000);
   }, []);
   */
+
+  useLayoutEffect(() => {
+    if (didMount.current) {
+      setShow(true);
+    }else didMount.current = true;
+  }, [Tiempo]);
+
 
     useImperativeHandle(ref, () => ({
       GetGrafoAleatorio() {
@@ -235,6 +247,7 @@ function App() {
           .then((response) => {
             console.log(response.data);
             setDataGrafoAleatorio(response.data);
+            setTiempo(response.data.tiempo);
             return response.data;
           })
           .catch((error) => {
@@ -249,6 +262,7 @@ function App() {
           .then((response) => {
             console.log(response.data);
             setDataGrafoAleatorio(response.data);
+            setTiempo(response.data.tiempo);
             return response.data;
           })
           .catch((error) => {
@@ -352,15 +366,12 @@ function App() {
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>Tiempo de ejecucion</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+        <Modal.Body>{Tiempo}</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
+            Ok
           </Button>
         </Modal.Footer>
       </Modal>
@@ -397,7 +408,7 @@ function App() {
                 <Dropdown.Item
                   eventKey="1"
                   className="glow-on-hover text-white"
-                  onClick={() => childRef.current.GetGrafoPersonalizado()}
+                  onClick={() => childRef.current.handleShow()}
                 >
                   <span>Personalizado</span>
                 </Dropdown.Item>
