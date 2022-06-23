@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  background-color: #000011;
 }
 
 .App-logo {
@@ -233,4 +234,16 @@ button:hover {
 
 .dropdown-toggle.btn.btn-primary {
   width: 100% !important;
+}
+
+table {
+  width: 90%;
+  border-collapse: collapse!important;
+  margin: 20px;
+}
+
+table, th, td {
+  border: 2px solid!important;
+  border-color: #bdbdbd!important;
+  color: #bdbdbd!important;
 }

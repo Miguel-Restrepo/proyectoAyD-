@@ -18,11 +18,13 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import Container from "react-bootstrap/Container";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Modal from 'react-bootstrap/Modal'
+import Button from "react-bootstrap/esm/Button";
 
 function App() {
   const childRef = useRef();
 
-  const FocusGraph = forwardRef((props, ref) => {
+  const FocusGraph = React.memo(forwardRef((props, ref) => {
     const fgRef = useRef();
     const [dataGrafoAleatorio, setDataGrafoAleatorio] = useState({
       nodes: [],
@@ -32,7 +34,17 @@ function App() {
     const [canRemoveLink, setCanRemoveLink] = useState(false);
     const [cooldownTicks, setCooldownTicks] = useState(undefined);
     const [grafoId, setGrafoId] = useState(undefined);
-    const [tabla, setTabla] = useState({});
+
+    const [tabla, setTabla] = useState([]);
+    const [modoGrafico, setModoGrafico] = useState(true);
+
+    const [sourceAddLink, setSourceAddLink] = useState(null);
+    const [targetAddLink, setTargetAddLink] = useState(null);
+    const [canAddLink1, setCanAddLink1] = useState(null);
+    const [canAddLink2, setCanAddLink2] = useState(null);
+
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
 
     const handleNodeClick = useCallback(
       (node) => {
@@ -53,8 +65,21 @@ function App() {
           setDataGrafoAleatorio({ ...dataGrafoAleatorio, nodes: newNodes, links: newLinks });
           setCanRemoveNode(false);
         }
+
+        if(canAddLink1){
+          setSourceAddLink(node.id);
+          setCanAddLink2(true);
+          console.log(sourceAddLink);
+        }
+
+        if(canAddLink2){
+          setTargetAddLink(node.id);
+          setCanAddLink1(false);
+          setCanAddLink2(false);
+        }
+
       },
-      [canRemoveNode, dataGrafoAleatorio, setDataGrafoAleatorio]
+      [canAddLink1, canAddLink2, canRemoveNode, dataGrafoAleatorio, sourceAddLink, targetAddLink]
     );
 
     const handleLinkClick = useCallback(
@@ -132,7 +157,7 @@ function App() {
 
       GetGrafoPersonalizado() {
         axios
-          .get("/grafo/generaraleatorio")
+          .post("/grafo/generaraleatorio", null, { params: {grafo: {NombreGrafo:"xd",  NumeroNodos: 3,  NumeroAristas: 4}}})
           .then((response) => {
             console.log(response.data);
             setDataGrafoAleatorio(response.data);
@@ -165,12 +190,17 @@ function App() {
           .then((response) => {
             console.log(response.data);
             setTabla(response.data);
+            setModoGrafico(false);
             return response.data;
           })
           .catch((error) => {
             console.log(error);
             return error;
           });
+      },
+
+      GetModoGrafico() {
+        setModoGrafico(true);
       },
 
       GetQueyranne() {
@@ -213,6 +243,21 @@ function App() {
           });
       },
 
+      GetQClusteringK() {
+        axios
+          .get(`/q_clusteringK/${grafoId}`)
+          .then((response) => {
+            console.log(response.data);
+            setDataGrafoAleatorio(response.data);
+            return response.data;
+          })
+          .catch((error) => {
+            console.log(error);
+            return error;
+          });
+      },
+
+
       AddNode() {
         setDataGrafoAleatorio(({ nodes, links }) => {
           const id = nodes.length;
@@ -228,6 +273,10 @@ function App() {
         setCanRemoveNode(true);
       },
 
+      AddLink() {
+        setCanAddLink1(true);
+      },
+
       RmLink() {
         setCanRemoveLink(true);
       },
@@ -235,48 +284,94 @@ function App() {
       canDrag() {
         setCooldownTicks(0);
       },
+
+      handleShow() {
+        setShow(true);
+      },
+
     }));
 
     return (
-      <ForceGraph3D
+      <div style={{height: "100vh"}}>
+
+      {modoGrafico &&
+        <ForceGraph3D
         ref={fgRef}
-        graphData={dataGrafoAleatorio}
-        nodeLabel="id"
-        onNodeClick={handleNodeClick}
-        onLinkClick={handleLinkClick}
-        linkCurvature="curvature"
-        linkCurveRotation="rotation"
-        nodeColor={ (node) => {return node.color} }
-        linkThreeObjectExtend={true}
-        linkThreeObject={(link) => {
-          // extend link with text sprite
+              graphData={dataGrafoAleatorio}
+              nodeLabel="id"
+              onNodeClick={handleNodeClick}
+              onLinkClick={handleLinkClick}
+              linkCurvature="curvature"
+              linkCurveRotation="rotation"
+              nodeColor={ (node) => {return node.color} }
+              linkThreeObjectExtend={true}
+              linkThreeObject={(link) => {
+                // extend link with text sprite
 
-          let sprite = new SpriteText(`${link.weight}`);
-          if (!link.hasOwnProperty("weight")) {
-            sprite = new SpriteText("");
-          }
-          sprite.color = "lightgrey";
-          sprite.textHeight = 1.5;
+                let sprite = new SpriteText(`${link.weight}`);
+                if (!link.hasOwnProperty("weight")) {
+                  sprite = new SpriteText("");
+                }
+                sprite.color = "lightgrey";
+                sprite.textHeight = 1.5;
 
-          return sprite;
-        }}
-        linkPositionUpdate={(sprite, { start, end }) => {
-          const middlePos = Object.assign(
-            ...["x", "y", "z"].map((c) => ({
-              [c]: start[c] + (end[c] - start[c]) / 2, // calc middle point
-            }))
-          );
+                return sprite;
+              }}
+              linkPositionUpdate={(sprite, { start, end }) => {
+                const middlePos = Object.assign(
+                  ...["x", "y", "z"].map((c) => ({
+                    [c]: start[c] + (end[c] - start[c]) / 2, // calc middle point
+                  }))
+                );
 
-          // Position sprite
-          Object.assign(sprite.position, middlePos);
-        }}
-        cooldownTicks={cooldownTicks}
-        onNodeDragEnd={() => setCooldownTicks(undefined)}
-        linkDirectionalArrowLength={dataGrafoAleatorio.Dirigido === 1 ? 3.5 : 0}
+                // Position sprite
+                Object.assign(sprite.position, middlePos);
+              }}
+              cooldownTicks={cooldownTicks}
+              onNodeDragEnd={() => setCooldownTicks(undefined)}
+              linkDirectionalArrowLength={dataGrafoAleatorio.Dirigido === 1 ? 3.5 : 0}
         linkDirectionalArrowRelPos={1}
       />
+      } 
+
+
+      {modoGrafico===false &&
+        <table>
+          {tabla.map((items, index) => {
+            return (
+              <tr key={index}>
+                {items.map((subItems, sIndex) => {
+                  return <td> {subItems} </td>;
+                })}
+              </tr>
+            );
+          })}
+        </table>
+      } 
+      
+
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Modal heading</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      </div>
+      
     );
-  });
+  }));
+
+
+  
 
   return (
     <div className="App">
@@ -302,6 +397,7 @@ function App() {
                 <Dropdown.Item
                   eventKey="1"
                   className="glow-on-hover text-white"
+                  onClick={() => childRef.current.GetGrafoPersonalizado()}
                 >
                   <span>Personalizado</span>
                 </Dropdown.Item>
@@ -424,6 +520,7 @@ function App() {
                 <Dropdown.Item
                   eventKey="1"
                   className="glow-on-hover text-white"
+                  onClick={() => childRef.current.AddLink()}
                 >
                   <span>Agregar</span>
                 </Dropdown.Item>
@@ -472,13 +569,6 @@ function App() {
                 <Dropdown.Item
                   eventKey="2"
                   className="glow-on-hover text-white"
-                  onClick={() => childRef.current.GetMssf()}
-                >
-                  <span>Algoritmo Mssf</span>
-                </Dropdown.Item>
-                <Dropdown.Item
-                  eventKey="2"
-                  className="glow-on-hover text-white"
                   onClick={() => childRef.current.GetQClustering()}
                 >
                   <span>Algoritmo Q Clustering</span>
@@ -486,8 +576,9 @@ function App() {
                 <Dropdown.Item
                   eventKey="2"
                   className="glow-on-hover text-white"
+                  onClick={() => childRef.current.GetQClusteringK()}
                 >
-                  <span>Algoritmo 4</span>
+                  <span>Algoritmo Q Clustering K</span>
                 </Dropdown.Item>
               </DropdownButton>
             </Dropdown.Menu>
@@ -541,7 +632,11 @@ function App() {
             </Dropdown.Toggle>
 
             <Dropdown.Menu className="bgGray">
-              <Dropdown.Item href="#" className="glow-on-hover text-white">
+              <Dropdown.Item 
+              href="#" 
+              className="glow-on-hover text-white"
+              onClick={() => childRef.current.GetModoGrafico()}
+              >
                 <span>Gráfica</span>
               </Dropdown.Item>
               <Dropdown.Item 
@@ -575,7 +670,8 @@ function App() {
       </Navbar>
 
       <FocusGraph ref={childRef} />
-      
+
+    
 
     </div>
   );
